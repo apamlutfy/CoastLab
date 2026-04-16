@@ -1,0 +1,2810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoastLab — Inspired by the Coast. Designed for Life.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #fafaf8;
+    --ocean: #5b9ab8;
+    --ocean-light: #a8d4e8;
+    --ocean-deep: #1a4a63;
+    --sand: #e8e2d9;
+    --mid: #6b6b6b;
+    --border: rgba(0,0,0,0.1);
+    --font-display: 'Cormorant Garamond', serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--white);
+    color: var(--black);
+    overflow-x: hidden;
+  }
+
+  /* ── PAGE SYSTEM ── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px;
+    height: 72px;
+    background: rgba(250,250,248,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    transition: all 0.3s;
+  }
+
+  .nav-logo {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    color: var(--black);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex; gap: 36px; list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--black);
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+    padding-bottom: 2px;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 100%;
+    height: 1px;
+    background: var(--ocean);
+    transition: right 0.3s ease;
+  }
+
+  .nav-links a:hover::after { right: 0; }
+
+  .nav-actions {
+    display: flex; align-items: center; gap: 20px;
+  }
+
+  .cart-btn {
+    position: relative;
+    background: none; border: none;
+    cursor: pointer;
+    padding: 8px;
+    font-size: 20px;
+  }
+
+  .cart-count {
+    position: absolute; top: 2px; right: 2px;
+    width: 18px; height: 18px;
+    background: var(--ocean);
+    color: white;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .hamburger {
+    display: none;
+    flex-direction: column; gap: 5px;
+    background: none; border: none; cursor: pointer; padding: 4px;
+  }
+
+  .hamburger span {
+    display: block; width: 24px; height: 2px;
+    background: var(--black);
+    transition: all 0.3s;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-block;
+    padding: 14px 36px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s;
+  }
+
+  .btn-primary {
+    background: var(--black);
+    color: var(--white);
+  }
+
+  .btn-primary:hover {
+    background: var(--ocean-deep);
+    transform: translateY(-1px);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--black);
+    border: 1.5px solid var(--black);
+  }
+
+  .btn-outline:hover {
+    background: var(--black);
+    color: var(--white);
+  }
+
+  .btn-ocean {
+    background: var(--ocean);
+    color: white;
+  }
+
+  .btn-ocean:hover {
+    background: var(--ocean-deep);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    height: 100vh;
+    position: relative;
+    display: flex; align-items: center;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(160deg, rgba(10,10,10,0.55) 0%, rgba(26,74,99,0.35) 50%, rgba(91,154,184,0.2) 100%),
+      url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1800&q=90') center/cover no-repeat;
+    animation: heroZoom 18s ease-in-out infinite alternate;
+  }
+
+  @keyframes heroZoom {
+    from { transform: scale(1); }
+    to { transform: scale(1.05); }
+  }
+
+  .hero-waves {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 160px;
+    overflow: hidden;
+  }
+
+  .hero-waves svg { width: 100%; height: 100%; }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    padding: 0 80px;
+    max-width: 900px;
+  }
+
+  .hero-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ocean-light);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(64px, 9vw, 130px);
+    font-weight: 300;
+    line-height: 0.92;
+    color: var(--white);
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--ocean-light);
+  }
+
+  .hero-tagline {
+    font-size: 16px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.8);
+    letter-spacing: 0.06em;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+
+  .hero-actions {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-scroll {
+    position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: rgba(255,255,255,0.6);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    z-index: 2;
+    animation: scrollBounce 2s infinite;
+  }
+
+  @keyframes scrollBounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(6px); }
+  }
+
+  /* ── SECTIONS ── */
+  section { padding: 100px 80px; }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ocean);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 4vw, 56px);
+    font-weight: 400;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .section-sub {
+    font-size: 15px;
+    color: var(--mid);
+    font-weight: 300;
+    max-width: 480px;
+    line-height: 1.7;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 56px;
+  }
+
+  /* ── CATEGORIES ── */
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    margin-top: 48px;
+  }
+
+  .category-card {
+    position: relative;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--black);
+  }
+
+  .category-card:first-child { grid-column: span 2; }
+
+  .category-card img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s ease, opacity 0.5s;
+    opacity: 0.8;
+  }
+
+  .category-card:hover img {
+    transform: scale(1.08);
+    opacity: 0.6;
+  }
+
+  .category-card-content {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+    padding: 28px;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
+  }
+
+  .category-card-name {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 400;
+    color: white;
+    letter-spacing: 0.04em;
+  }
+
+  .category-card-count {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.12em;
+    margin-top: 4px;
+  }
+
+  .category-card-arrow {
+    position: absolute; top: 24px; right: 24px;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-size: 14px;
+    transform: translateX(-6px);
+    opacity: 0;
+    transition: all 0.3s;
+  }
+
+  .category-card:hover .category-card-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* ── PRODUCTS ── */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+  }
+
+  .product-card {
+    cursor: pointer;
+    group: true;
+  }
+
+  .product-img-wrap {
+    position: relative;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+    background: var(--sand);
+    margin-bottom: 16px;
+  }
+
+  .product-img-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+
+  .product-card:hover .product-img-wrap img {
+    transform: scale(1.06);
+  }
+
+  .product-badge {
+    position: absolute; top: 14px; left: 14px;
+    padding: 4px 10px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: var(--black);
+    color: white;
+  }
+
+  .product-badge.sale { background: var(--ocean); }
+  .product-badge.new { background: var(--ocean-deep); }
+
+  .product-actions-overlay {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 16px;
+    background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    display: flex; gap: 8px;
+  }
+
+  .product-card:hover .product-actions-overlay {
+    transform: translateY(0);
+  }
+
+  .product-quick-add {
+    flex: 1;
+    padding: 10px;
+    background: white;
+    border: none;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .product-quick-add:hover { background: var(--ocean); color: white; }
+
+  .product-name {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
+  }
+
+  .product-category-tag {
+    font-size: 11px;
+    color: var(--mid);
+    margin-bottom: 8px;
+    letter-spacing: 0.06em;
+  }
+
+  .product-price {
+    font-size: 15px;
+    font-weight: 600;
+    display: flex; gap: 10px; align-items: center;
+  }
+
+  .product-price .original {
+    text-decoration: line-through;
+    color: var(--mid);
+    font-weight: 300;
+    font-size: 13px;
+  }
+
+  .product-price .sale-price { color: var(--ocean); }
+
+  /* ── PROMO BANNER ── */
+  .promo-banner {
+    margin: 0 80px 100px;
+    padding: 80px;
+    background: var(--black);
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 40px;
+  }
+
+  .promo-banner::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: url('https://images.unsplash.com/photo-1519046904884-53103b34b206?w=1400&q=80') center/cover;
+    opacity: 0.25;
+  }
+
+  .promo-content { position: relative; z-index: 1; }
+
+  .promo-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ocean-light);
+    margin-bottom: 20px;
+  }
+
+  .promo-title {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 4vw, 60px);
+    font-weight: 300;
+    color: white;
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+
+  .promo-desc {
+    font-size: 15px;
+    color: rgba(255,255,255,0.65);
+    font-weight: 300;
+    max-width: 420px;
+    line-height: 1.7;
+    margin-bottom: 36px;
+  }
+
+  /* ── WAVE DIVIDER ── */
+  .wave-divider {
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    margin: -2px 0;
+  }
+
+  .wave-divider svg { display: block; width: 100%; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--black);
+    color: var(--white);
+    padding: 80px 80px 40px;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 64px;
+  }
+
+  .footer-brand-name {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    margin-bottom: 16px;
+  }
+
+  .footer-brand-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.8;
+    font-weight: 300;
+    margin-bottom: 28px;
+  }
+
+  .footer-socials {
+    display: flex; gap: 12px;
+  }
+
+  .social-icon {
+    width: 38px; height: 38px;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    color: white;
+  }
+
+  .social-icon:hover {
+    background: var(--ocean);
+    border-color: var(--ocean);
+    transform: translateY(-2px);
+  }
+
+  .footer-col h4 {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    color: rgba(255,255,255,0.6);
+  }
+
+  .footer-col ul { list-style: none; }
+
+  .footer-col ul li {
+    margin-bottom: 12px;
+  }
+
+  .footer-col ul li a {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    transition: color 0.2s;
+    font-weight: 300;
+    cursor: pointer;
+  }
+
+  .footer-col ul li a:hover { color: var(--ocean-light); }
+
+  .footer-contact-item {
+    display: flex; gap: 12px; align-items: flex-start;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    font-weight: 300;
+  }
+
+  .footer-contact-item span:first-child {
+    color: var(--ocean);
+    font-size: 15px;
+    margin-top: 1px;
+  }
+
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+  }
+
+  /* ── SHOP PAGE ── */
+  .shop-header {
+    padding: 140px 80px 60px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .shop-title {
+    font-family: var(--font-display);
+    font-size: 56px;
+    font-weight: 300;
+    margin-bottom: 8px;
+  }
+
+  .shop-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 0;
+  }
+
+  .shop-sidebar {
+    padding: 40px 32px;
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 72px;
+    height: calc(100vh - 72px);
+    overflow-y: auto;
+  }
+
+  .filter-group { margin-bottom: 40px; }
+
+  .filter-group h3 {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .filter-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--black);
+  }
+
+  .filter-option input[type="checkbox"] {
+    width: 16px; height: 16px;
+    accent-color: var(--ocean);
+    cursor: pointer;
+  }
+
+  .filter-option-count {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--mid);
+  }
+
+  .shop-main {
+    padding: 40px 48px;
+  }
+
+  .shop-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 36px;
+  }
+
+  .shop-count {
+    font-size: 13px;
+    color: var(--mid);
+  }
+
+  .shop-sort select {
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    background: white;
+    font-family: var(--font-body);
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+  }
+
+  /* ── ABOUT ── */
+  .about-hero {
+    height: 60vh;
+    background:
+      linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(26,74,99,0.6)),
+      url('https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=1600&q=80') center/cover;
+    display: flex; align-items: flex-end;
+    padding: 80px;
+    margin-top: 72px;
+  }
+
+  .about-hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(48px, 7vw, 96px);
+    font-weight: 300;
+    color: white;
+    line-height: 1;
+  }
+
+  .about-content {
+    padding: 100px 80px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .about-lead {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 300;
+    line-height: 1.5;
+    margin-bottom: 48px;
+    color: var(--ocean-deep);
+  }
+
+  .about-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+
+  .about-text p {
+    font-size: 15px;
+    line-height: 1.85;
+    color: #444;
+    margin-bottom: 24px;
+    font-weight: 300;
+  }
+
+  .about-stats {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--black);
+  }
+
+  .stat-box {
+    background: var(--white);
+    padding: 40px;
+    text-align: center;
+  }
+
+  .stat-box:nth-child(2n) { background: var(--sand); }
+
+  .stat-number {
+    font-family: var(--font-display);
+    font-size: 52px;
+    font-weight: 300;
+    color: var(--ocean);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+  .values-section {
+    padding: 80px;
+    background: var(--black);
+    color: white;
+  }
+
+  .values-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 48px;
+    background: rgba(255,255,255,0.1);
+  }
+
+  .value-item {
+    padding: 48px 40px;
+    background: var(--black);
+  }
+
+  .value-icon {
+    font-size: 32px;
+    margin-bottom: 20px;
+  }
+
+  .value-title {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 14px;
+    color: var(--ocean-light);
+  }
+
+  .value-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.8;
+    font-weight: 300;
+  }
+
+  /* ── CONTACT ── */
+  .contact-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin-top: 72px;
+    min-height: calc(100vh - 72px);
+  }
+
+  .contact-left {
+    padding: 100px 80px;
+    background: var(--black);
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .contact-left::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url('https://images.unsplash.com/photo-1476673160081-cf065607f449?w=900&q=80') center/cover;
+    opacity: 0.15;
+  }
+
+  .contact-left-content { position: relative; z-index: 1; }
+
+  .contact-title {
+    font-family: var(--font-display);
+    font-size: 52px;
+    font-weight: 300;
+    color: white;
+    line-height: 1.1;
+    margin-bottom: 40px;
+  }
+
+  .contact-info-item {
+    display: flex; gap: 16px; align-items: flex-start;
+    margin-bottom: 32px;
+  }
+
+  .contact-info-icon {
+    width: 44px; height: 44px;
+    border: 1px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .contact-info-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ocean-light);
+    margin-bottom: 4px;
+  }
+
+  .contact-info-value {
+    font-size: 15px;
+    color: rgba(255,255,255,0.8);
+    font-weight: 300;
+  }
+
+  .contact-right {
+    padding: 100px 80px;
+    background: var(--white);
+  }
+
+  .contact-form-title {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 400;
+    margin-bottom: 40px;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 10px;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 14px 18px;
+    border: 1px solid var(--border);
+    background: var(--white);
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--black);
+    outline: none;
+    transition: border-color 0.3s;
+    resize: vertical;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: var(--ocean);
+  }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* ── CART ── */
+  .cart-page { padding: 120px 80px 80px; }
+
+  .cart-title {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 300;
+    margin-bottom: 48px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .cart-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 60px;
+  }
+
+  .cart-items { }
+
+  .cart-item {
+    display: grid;
+    grid-template-columns: 100px 1fr auto;
+    gap: 24px;
+    align-items: center;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .cart-item-img {
+    aspect-ratio: 3/4;
+    object-fit: cover;
+    width: 100px;
+    background: var(--sand);
+  }
+
+  .cart-item-name {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .cart-item-variant {
+    font-size: 12px;
+    color: var(--mid);
+    margin-bottom: 16px;
+  }
+
+  .cart-qty {
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .qty-btn {
+    width: 28px; height: 28px;
+    border: 1px solid var(--border);
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .qty-btn:hover { background: var(--black); color: white; }
+
+  .qty-val { font-size: 14px; font-weight: 500; min-width: 20px; text-align: center; }
+
+  .cart-item-price {
+    font-size: 16px;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  .cart-remove {
+    font-size: 11px;
+    color: var(--mid);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    letter-spacing: 0.06em;
+  }
+
+  .cart-summary {
+    background: var(--sand);
+    padding: 40px;
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+  }
+
+  .cart-summary h3 {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+  }
+
+  .summary-line {
+    display: flex; justify-content: space-between;
+    font-size: 13px;
+    margin-bottom: 14px;
+    color: var(--mid);
+  }
+
+  .summary-line.total {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--black);
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+    margin-top: 16px;
+  }
+
+  .cart-promo {
+    display: flex; gap: 8px;
+    margin: 24px 0;
+  }
+
+  .cart-promo input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    font-family: var(--font-body);
+    font-size: 13px;
+    background: white;
+    outline: none;
+  }
+
+  /* ── CHECKOUT ── */
+  .checkout-page { padding: 120px 80px 80px; }
+
+  .checkout-title {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 300;
+    margin-bottom: 48px;
+  }
+
+  .checkout-layout {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 60px;
+    align-items: start;
+  }
+
+  .checkout-steps {
+    display: flex; gap: 0; margin-bottom: 48px;
+  }
+
+  .checkout-step {
+    flex: 1;
+    padding: 14px 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--border);
+    color: var(--mid);
+    text-align: center;
+  }
+
+  .checkout-step.active {
+    border-bottom-color: var(--ocean);
+    color: var(--ocean-deep);
+  }
+
+  .checkout-step.done {
+    border-bottom-color: var(--black);
+    color: var(--black);
+  }
+
+  .checkout-section {
+    margin-bottom: 40px;
+  }
+
+  .checkout-section-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .checkout-order-summary {
+    background: var(--sand);
+    padding: 36px;
+    position: sticky;
+    top: 100px;
+  }
+
+  .checkout-order-item {
+    display: flex; gap: 16px; align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .checkout-order-img {
+    width: 60px; height: 78px;
+    object-fit: cover;
+    background: white;
+    flex-shrink: 0;
+  }
+
+  .checkout-order-name { font-size: 13px; font-weight: 500; }
+  .checkout-order-variant { font-size: 11px; color: var(--mid); }
+  .checkout-order-price {
+    margin-left: auto;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* ── EMPTY CART ── */
+  .empty-cart {
+    text-align: center;
+    padding: 80px 40px;
+  }
+
+  .empty-cart-icon { font-size: 64px; margin-bottom: 24px; }
+
+  .empty-cart h2 {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 300;
+    margin-bottom: 12px;
+  }
+
+  .empty-cart p {
+    font-size: 14px;
+    color: var(--mid);
+    margin-bottom: 32px;
+  }
+
+  /* ── NOTIFICATION ── */
+  .notification {
+    position: fixed;
+    bottom: 32px; right: 32px;
+    background: var(--black);
+    color: white;
+    padding: 16px 24px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 9999;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .notification.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .notification span:first-child { color: var(--ocean-light); font-size: 18px; }
+
+  /* ── MOBILE MENU ── */
+  .mobile-menu {
+    position: fixed;
+    top: 72px; left: 0; right: 0; bottom: 0;
+    background: var(--white);
+    z-index: 999;
+    padding: 40px;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+  }
+
+  .mobile-menu.open { transform: translateX(0); }
+
+  .mobile-menu a {
+    font-size: 28px;
+    font-family: var(--font-display);
+    font-weight: 300;
+    color: var(--black);
+    text-decoration: none;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+
+  /* ── OCEAN TICKER ── */
+  .ticker {
+    background: var(--ocean-deep);
+    color: white;
+    padding: 12px 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .ticker-inner {
+    display: inline-flex;
+    animation: ticker 28s linear infinite;
+    gap: 60px;
+  }
+
+  .ticker-item {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .ticker-dot { color: var(--ocean-light); }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1200px) {
+    .categories-grid { grid-template-columns: repeat(3, 1fr); }
+    .products-grid { grid-template-columns: repeat(3, 1fr); }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 0 24px; }
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .mobile-menu { display: flex; }
+
+    section { padding: 60px 24px; }
+    .hero-content { padding: 0 24px; }
+    .hero-title { font-size: 56px; }
+
+    .categories-grid { grid-template-columns: repeat(2, 1fr); }
+    .categories-grid .category-card:first-child { grid-column: span 2; }
+
+    .products-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+
+    .promo-banner { margin: 0 24px 60px; padding: 48px 32px; flex-direction: column; }
+
+    .about-body { grid-template-columns: 1fr; }
+    .contact-layout { grid-template-columns: 1fr; }
+    .contact-left { padding: 60px 32px; }
+    .contact-right { padding: 60px 32px; }
+
+    .cart-page { padding: 100px 24px 60px; }
+    .cart-layout { grid-template-columns: 1fr; }
+
+    .checkout-page { padding: 100px 24px 60px; }
+    .checkout-layout { grid-template-columns: 1fr; }
+
+    .shop-layout { grid-template-columns: 1fr; }
+    .shop-sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+    .shop-header { padding: 100px 24px 40px; }
+    .shop-main { padding: 24px; }
+
+    footer { padding: 60px 24px 32px; }
+    .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+
+    .values-grid { grid-template-columns: 1fr; }
+
+    .about-hero { padding: 40px 24px; }
+  }
+
+  @media (max-width: 480px) {
+    .products-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .categories-grid { grid-template-columns: 1fr 1fr; }
+    .categories-grid .category-card:first-child { grid-column: span 2; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+
+  /* ── PRODUCT MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(10,10,10,0.55);
+    backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.35s ease;
+    padding: 24px;
+  }
+
+  .modal-overlay.open {
+    opacity: 1; pointer-events: all;
+  }
+
+  .modal {
+    background: var(--white);
+    width: 100%;
+    max-width: 920px;
+    max-height: 92vh;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    transform: translateY(32px) scale(0.98);
+    transition: transform 0.35s cubic-bezier(0.175,0.885,0.32,1.1);
+    box-shadow: 0 40px 100px rgba(0,0,0,0.25);
+  }
+
+  .modal-overlay.open .modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .modal-close {
+    position: absolute; top: 20px; right: 20px;
+    width: 38px; height: 38px;
+    background: var(--black); color: white;
+    border: none; cursor: pointer; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10;
+    transition: background 0.2s;
+  }
+
+  .modal-close:hover { background: var(--ocean); }
+
+  .modal-img-side {
+    position: relative;
+    background: var(--sand);
+    min-height: 520px;
+  }
+
+  .modal-main-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .modal-badge {
+    position: absolute; top: 18px; left: 18px;
+    padding: 5px 12px;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: white;
+  }
+
+  .modal-thumbs {
+    position: absolute; bottom: 16px; left: 16px;
+    display: flex; gap: 8px;
+  }
+
+  .modal-thumb {
+    width: 52px; height: 64px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid transparent;
+    opacity: 0.7;
+    transition: all 0.2s;
+  }
+
+  .modal-thumb.active, .modal-thumb:hover {
+    border-color: white;
+    opacity: 1;
+  }
+
+  .modal-info-side {
+    padding: 44px 40px;
+    display: flex; flex-direction: column;
+  }
+
+  .modal-cat {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--ocean); margin-bottom: 10px;
+  }
+
+  .modal-name {
+    font-family: var(--font-display);
+    font-size: 32px; font-weight: 400;
+    line-height: 1.15; margin-bottom: 16px;
+  }
+
+  .modal-price {
+    font-size: 22px; font-weight: 600;
+    display: flex; gap: 12px; align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .modal-price .orig {
+    font-size: 15px; font-weight: 300;
+    color: var(--mid); text-decoration: line-through;
+  }
+
+  .modal-price .sale { color: var(--ocean); }
+
+  .modal-desc {
+    font-size: 13px; line-height: 1.8;
+    color: #555; font-weight: 300;
+    margin-bottom: 28px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .modal-option-label {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--mid); margin-bottom: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+
+  .modal-option-label span { color: var(--ocean); font-size: 11px; cursor: pointer; }
+
+  .size-grid {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .size-btn {
+    min-width: 44px; height: 44px;
+    padding: 0 10px;
+    border: 1.5px solid var(--border);
+    background: none; cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 12px; font-weight: 500;
+    letter-spacing: 0.06em;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .size-btn:hover {
+    border-color: var(--black);
+  }
+
+  .size-btn.selected {
+    background: var(--black); color: white;
+    border-color: var(--black);
+  }
+
+  .size-btn.out-of-stock {
+    opacity: 0.35; cursor: not-allowed;
+  }
+
+  .size-btn.out-of-stock::after {
+    content: '';
+    position: absolute; top: 50%; left: 0; right: 0;
+    height: 1px; background: var(--mid);
+    transform: rotate(-20deg);
+  }
+
+  .color-grid {
+    display: flex; gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .color-btn {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 2.5px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.2s;
+    outline: 2px solid transparent;
+    outline-offset: 3px;
+  }
+
+  .color-btn:hover { transform: scale(1.1); }
+  .color-btn.selected { outline-color: var(--black); }
+
+  .modal-qty-row {
+    display: flex; gap: 12px; align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .modal-qty-label {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--mid); min-width: 60px;
+  }
+
+  .modal-qty-ctrl {
+    display: flex; align-items: center;
+    border: 1.5px solid var(--border);
+  }
+
+  .modal-qty-btn {
+    width: 40px; height: 40px;
+    background: none; border: none;
+    cursor: pointer; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+    font-family: var(--font-body);
+  }
+
+  .modal-qty-btn:hover { background: var(--sand); }
+
+  .modal-qty-val {
+    width: 44px; text-align: center;
+    font-size: 15px; font-weight: 600;
+    border-left: 1.5px solid var(--border);
+    border-right: 1.5px solid var(--border);
+    height: 40px; line-height: 40px;
+  }
+
+  .modal-add-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--black); color: white;
+    border: none; cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    transition: background 0.25s, transform 0.15s;
+    margin-bottom: 12px;
+  }
+
+  .modal-add-btn:hover { background: var(--ocean-deep); transform: translateY(-1px); }
+  .modal-add-btn:active { transform: translateY(0); }
+  .modal-add-btn:disabled { background: var(--mid); cursor: not-allowed; transform: none; }
+
+  .modal-wishlist-btn {
+    width: 100%; padding: 14px;
+    background: none; border: 1.5px solid var(--border);
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    transition: all 0.2s;
+    color: var(--black);
+  }
+
+  .modal-wishlist-btn:hover { border-color: var(--black); }
+
+  .modal-features {
+    margin-top: 24px; padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 10px;
+  }
+
+  .modal-feature {
+    display: flex; gap: 10px; align-items: center;
+    font-size: 12px; color: var(--mid); font-weight: 300;
+  }
+
+  .modal-feature span:first-child { font-size: 15px; }
+
+  .modal-size-error {
+    font-size: 12px; color: #c0392b;
+    margin-bottom: 12px; display: none;
+  }
+
+  @media (max-width: 700px) {
+    .modal { grid-template-columns: 1fr; max-height: 95vh; }
+    .modal-img-side { min-height: 300px; }
+    .modal-info-side { padding: 28px 24px; }
+    .modal-name { font-size: 26px; }
+  }
+
+  /* ── SUCCESS PAGE ── */
+  .success-page {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+    padding: 40px;
+    background: linear-gradient(135deg, var(--white) 0%, var(--ocean-light) 100%);
+  }
+
+  .success-icon { font-size: 72px; margin-bottom: 28px; }
+
+  .success-title {
+    font-family: var(--font-display);
+    font-size: 52px;
+    font-weight: 300;
+    margin-bottom: 16px;
+  }
+
+  .success-sub {
+    font-size: 16px;
+    color: var(--mid);
+    font-weight: 300;
+    margin-bottom: 40px;
+    max-width: 400px;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav id="main-nav">
+  <a class="nav-logo" onclick="goPage('home')">CoastLab</a>
+  <ul class="nav-links">
+    <li><a onclick="goPage('home')">Home</a></li>
+    <li><a onclick="goPage('shop')">Shop</a></li>
+    <li><a onclick="goPage('about')">About</a></li>
+    <li><a onclick="goPage('contact')">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="cart-btn" onclick="goPage('cart')" title="Cart">
+      🛍️
+      <span class="cart-count" id="cart-count">0</span>
+    </button>
+    <button class="hamburger" onclick="toggleMobileMenu()" id="hamburger">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobile-menu">
+  <a onclick="goPage('home');toggleMobileMenu()">Home</a>
+  <a onclick="goPage('shop');toggleMobileMenu()">Shop</a>
+  <a onclick="goPage('about');toggleMobileMenu()">About</a>
+  <a onclick="goPage('contact');toggleMobileMenu()">Contact</a>
+  <a onclick="goPage('cart');toggleMobileMenu()">Cart</a>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notification" id="notification">
+  <span>🌊</span>
+  <span id="notification-text">Added to cart!</span>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE: HOME
+══════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <!-- TICKER -->
+  <div class="ticker" style="margin-top:72px">
+    <div class="ticker-inner">
+      <span class="ticker-item">Free Shipping on Orders Over RM250 <span class="ticker-dot">✦</span></span>
+      <span class="ticker-item">New Summer Collection Available <span class="ticker-dot">✦</span></span>
+      <span class="ticker-item">Inspired by the Coast. Designed for Life. <span class="ticker-dot">✦</span></span>
+      <span class="ticker-item">Use Code WAVE15 for 15% Off <span class="ticker-dot">✦</span></span>
+      <span class="ticker-item">Free Shipping on Orders Over RM250 <span class="ticker-dot">✦</span></span>
+      <span class="ticker-item">New Summer Collection Available <span class="ticker-dot">✦</span></span>
+      <span class="ticker-item">Inspired by the Coast. Designed for Life. <span class="ticker-dot">✦</span></span>
+      <span class="ticker-item">Use Code WAVE15 for 15% Off <span class="ticker-dot">✦</span></span>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" style="padding:0">
+    <div class="hero-bg"></div>
+    <div class="hero-waves">
+      <svg viewBox="0 0 1440 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,80 C180,140 360,20 540,80 C720,140 900,20 1080,80 C1260,140 1380,60 1440,80 L1440,160 L0,160 Z" fill="#fafaf8" opacity="0.95"/>
+        <path d="M0,100 C200,60 400,140 600,100 C800,60 1000,140 1200,100 C1320,80 1400,110 1440,100 L1440,160 L0,160 Z" fill="#fafaf8"/>
+      </svg>
+    </div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">Summer 2025 Collection</div>
+      <h1 class="hero-title">Coast<em>Lab</em></h1>
+      <p class="hero-tagline">Inspired by the Coast. Designed for Life.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="goPage('shop')">Shop Collection</button>
+        <button class="btn btn-outline" style="color:white;border-color:rgba(255,255,255,0.6)" onclick="goPage('about')">Our Story</button>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <span>↓</span>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section style="padding: 80px 80px 60px; background: var(--white);">
+    <div style="text-align:center; margin-bottom: 56px;">
+      <div class="section-label">Browse by Category</div>
+      <h2 class="section-title">Find Your Style</h2>
+    </div>
+    <div class="categories-grid">
+      <div class="category-card" onclick="filterShop('Women\'s Fashion')">
+        <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80" alt="Women's Fashion" loading="lazy">
+        <div class="category-card-content">
+          <div class="category-card-name">Women's Fashion</div>
+          <div class="category-card-count">42 Products</div>
+        </div>
+        <div class="category-card-arrow">→</div>
+      </div>
+      <div class="category-card" onclick="filterShop('Men\'s Fashion')">
+        <img src="https://images.unsplash.com/photo-1516826957135-700dedea698c?w=600&q=80" alt="Men's Fashion" loading="lazy">
+        <div class="category-card-content">
+          <div class="category-card-name">Men's Fashion</div>
+          <div class="category-card-count">38 Products</div>
+        </div>
+        <div class="category-card-arrow">→</div>
+      </div>
+      <div class="category-card" onclick="filterShop('Activewear Revolution')">
+        <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&q=80" alt="Activewear" loading="lazy">
+        <div class="category-card-content">
+          <div class="category-card-name">Activewear</div>
+          <div class="category-card-count">29 Products</div>
+        </div>
+        <div class="category-card-arrow">→</div>
+      </div>
+      <div class="category-card" onclick="filterShop('Accessories')">
+        <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80" alt="Accessories" loading="lazy">
+        <div class="category-card-content">
+          <div class="category-card-name">Accessories</div>
+          <div class="category-card-count">56 Products</div>
+        </div>
+        <div class="category-card-arrow">→</div>
+      </div>
+      <div class="category-card" onclick="filterShop('Women\'s Footwear')">
+        <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&q=80" alt="Women's Footwear" loading="lazy">
+        <div class="category-card-content">
+          <div class="category-card-name">Women's Footwear</div>
+          <div class="category-card-count">24 Products</div>
+        </div>
+        <div class="category-card-arrow">→</div>
+      </div>
+      <div class="category-card" onclick="filterShop('Men\'s Footwear')">
+        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80" alt="Men's Footwear" loading="lazy">
+        <div class="category-card-content">
+          <div class="category-card-name">Men's Footwear</div>
+          <div class="category-card-count">19 Products</div>
+        </div>
+        <div class="category-card-arrow">→</div>
+      </div>
+      <div class="category-card" onclick="filterShop('Kid\'s Clothing')">
+        <img src="https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=600&q=80" alt="Kid's Clothing" loading="lazy">
+        <div class="category-card-content">
+          <div class="category-card-name">Kid's Clothing</div>
+          <div class="category-card-count">31 Products</div>
+        </div>
+        <div class="category-card-arrow">→</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED PRODUCTS -->
+  <section style="padding: 80px 80px;">
+    <div class="section-header">
+      <div>
+        <div class="section-label">New Arrivals</div>
+        <h2 class="section-title">Featured Products</h2>
+      </div>
+      <button class="btn btn-outline" onclick="goPage('shop')">View All</button>
+    </div>
+    <div class="products-grid" id="home-products"></div>
+  </section>
+
+  <!-- PROMO BANNER -->
+  <div class="promo-banner">
+    <div class="promo-content">
+      <div class="promo-eyebrow">Limited Summer Offer</div>
+      <h2 class="promo-title">Catch the Wave.<br>Save 20% Today.</h2>
+      <p class="promo-desc">Our biggest summer sale is here. Shop the entire coastal collection and embrace the ocean lifestyle — free shipping included on all orders this week.</p>
+      <button class="btn btn-ocean" onclick="goPage('shop')">Shop the Sale</button>
+    </div>
+    <div style="position:relative;z-index:1;text-align:center;flex-shrink:0">
+      <div style="font-size:120px;line-height:1">🌊</div>
+      <div style="color:var(--ocean-light);font-family:var(--font-display);font-size:22px;font-weight:300;margin-top:8px">Free shipping this week</div>
+    </div>
+  </div>
+
+  <!-- WAVE DIVIDER -->
+  <div class="wave-divider" style="background:var(--white)">
+    <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0,40 C360,80 720,0 1080,40 C1260,60 1380,30 1440,40 L1440,80 L0,80 Z" fill="#0a0a0a"/>
+    </svg>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand-name">CoastLab</div>
+        <p class="footer-brand-desc">A modern coastal-inspired fashion brand combining comfort, performance, and style. We live and breathe the ocean lifestyle.</p>
+        <div class="footer-socials">
+          <a class="social-icon" href="#" title="Instagram">📷</a>
+          <a class="social-icon" href="#" title="Facebook">f</a>
+          <a class="social-icon" href="#" title="TikTok">♪</a>
+          <a class="social-icon" href="#" title="Pinterest">P</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Shop</h4>
+        <ul>
+          <li><a onclick="filterShop('Women\'s Fashion')">Women's Fashion</a></li>
+          <li><a onclick="filterShop('Men\'s Fashion')">Men's Fashion</a></li>
+          <li><a onclick="filterShop('Activewear Revolution')">Activewear</a></li>
+          <li><a onclick="filterShop('Accessories')">Accessories</a></li>
+          <li><a onclick="filterShop('Kid\'s Clothing')">Kid's Clothing</a></li>
+          <li><a onclick="filterShop('Men\'s Footwear')">Men's Footwear</a></li>
+          <li><a onclick="filterShop('Women\'s Footwear')">Women's Footwear</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a onclick="goPage('about')">About Us</a></li>
+          <li><a onclick="goPage('contact')">Contact</a></li>
+          <li><a href="#">Sustainability</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms & Conditions</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact Us</h4>
+        <div class="footer-contact-item"><span>✉️</span><div><div style="color:rgba(255,255,255,0.4);font-size:11px;margin-bottom:3px">Email</div><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="35464045455a474175565a5446415954571b565a58">[email&#160;protected]</a></div></div>
+        <div class="footer-contact-item"><span>📞</span><div><div style="color:rgba(255,255,255,0.4);font-size:11px;margin-bottom:3px">Phone</div>+60 12-345 6789</div></div>
+        <div class="footer-contact-item"><span>📍</span><div><div style="color:rgba(255,255,255,0.4);font-size:11px;margin-bottom:3px">Location</div>Malaysia</div></div>
+        <div class="footer-contact-item"><span>🕐</span><div><div style="color:rgba(255,255,255,0.4);font-size:11px;margin-bottom:3px">Hours</div>Mon–Fri: 9am – 6pm</div></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 CoastLab. All rights reserved.</span>
+      <span>Made with 🌊 in Malaysia</span>
+    </div>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE: SHOP
+══════════════════════════════════════════ -->
+<div class="page" id="page-shop">
+  <div class="shop-header">
+    <div class="section-label">All Products</div>
+    <h1 class="shop-title">The Collection</h1>
+    <p style="font-size:14px;color:var(--mid);font-weight:300">Discover coastal-inspired fashion for every occasion.</p>
+  </div>
+  <div class="shop-layout">
+    <aside class="shop-sidebar">
+      <div class="filter-group">
+        <h3>Category</h3>
+        <label class="filter-option"><input type="checkbox" class="cat-filter" value="Accessories"> Accessories <span class="filter-option-count">56</span></label>
+        <label class="filter-option"><input type="checkbox" class="cat-filter" value="Activewear Revolution"> Activewear <span class="filter-option-count">29</span></label>
+        <label class="filter-option"><input type="checkbox" class="cat-filter" value="Kid's Clothing"> Kid's Clothing <span class="filter-option-count">31</span></label>
+        <label class="filter-option"><input type="checkbox" class="cat-filter" value="Men's Fashion"> Men's Fashion <span class="filter-option-count">38</span></label>
+        <label class="filter-option"><input type="checkbox" class="cat-filter" value="Men's Footwear"> Men's Footwear <span class="filter-option-count">19</span></label>
+        <label class="filter-option"><input type="checkbox" class="cat-filter" value="Women's Fashion"> Women's Fashion <span class="filter-option-count">42</span></label>
+        <label class="filter-option"><input type="checkbox" class="cat-filter" value="Women's Footwear"> Women's Footwear <span class="filter-option-count">24</span></label>
+      </div>
+      <div class="filter-group">
+        <h3>Price Range</h3>
+        <label class="filter-option"><input type="checkbox"> Under RM100</label>
+        <label class="filter-option"><input type="checkbox"> RM100 – RM200</label>
+        <label class="filter-option"><input type="checkbox"> RM200 – RM350</label>
+        <label class="filter-option"><input type="checkbox"> Over RM350</label>
+      </div>
+      <div class="filter-group">
+        <h3>Size</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+          <button style="padding:6px 12px;border:1px solid var(--border);background:none;font-size:12px;cursor:pointer;font-family:var(--font-body)" onclick="this.style.background=this.style.background?'':'var(--black)';this.style.color=this.style.color?'':'white'">XS</button>
+          <button style="padding:6px 12px;border:1px solid var(--border);background:none;font-size:12px;cursor:pointer;font-family:var(--font-body)" onclick="this.style.background=this.style.background?'':'var(--black)';this.style.color=this.style.color?'':'white'">S</button>
+          <button style="padding:6px 12px;border:1px solid var(--border);background:none;font-size:12px;cursor:pointer;font-family:var(--font-body)" onclick="this.style.background=this.style.background?'':'var(--black)';this.style.color=this.style.color?'':'white'">M</button>
+          <button style="padding:6px 12px;border:1px solid var(--border);background:none;font-size:12px;cursor:pointer;font-family:var(--font-body)" onclick="this.style.background=this.style.background?'':'var(--black)';this.style.color=this.style.color?'':'white'">L</button>
+          <button style="padding:6px 12px;border:1px solid var(--border);background:none;font-size:12px;cursor:pointer;font-family:var(--font-body)" onclick="this.style.background=this.style.background?'':'var(--black)';this.style.color=this.style.color?'':'white'">XL</button>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;text-align:center;margin-top:8px" onclick="applyFilters()">Apply Filters</button>
+      <button style="width:100%;text-align:center;margin-top:10px;background:none;border:none;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mid);cursor:pointer;padding:10px" onclick="clearFilters()">Clear All</button>
+    </aside>
+    <div class="shop-main">
+      <div class="shop-toolbar">
+        <span class="shop-count" id="shop-count">Showing all products</span>
+        <div class="shop-sort">
+          <select onchange="sortProducts(this.value)">
+            <option value="default">Sort: Featured</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="newest">Newest First</option>
+          </select>
+        </div>
+      </div>
+      <div class="products-grid" id="shop-products"></div>
+    </div>
+  </div>
+
+  <!-- FOOTER (shop) -->
+  <footer>
+    <div class="footer-bottom" style="border-top:1px solid rgba(255,255,255,0.1);padding-top:28px">
+      <span>© 2025 CoastLab. All rights reserved.</span>
+      <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7a090f0a0a15080e3a19151b090e161b1854191517">[email&#160;protected]</a> · +60 12-345 6789</span>
+    </div>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE: ABOUT
+══════════════════════════════════════════ -->
+<div class="page" id="page-about">
+  <div class="about-hero">
+    <h1 class="about-hero-title">Our<br><em style="font-style:italic;color:var(--ocean-light)">Story</em></h1>
+  </div>
+
+  <div class="about-content">
+    <p class="about-lead">"We believe that the coast isn't just a place — it's a feeling. A way of moving through the world with ease, intention, and style."</p>
+    <div class="about-body">
+      <div class="about-text">
+        <p>CoastLab was born from a simple obsession: the ocean. Founded by a group of surfers, designers, and outdoor enthusiasts in Malaysia, we set out to create a fashion brand that truly reflected the coastal lifestyle — not just the aesthetic, but the values.</p>
+        <p>Every piece in our collection is designed to move with you. Whether you're catching waves at dawn, exploring city streets, or simply enjoying a lazy afternoon by the shore, CoastLab clothing adapts to your life with comfort and effortless style.</p>
+        <p>We use responsibly sourced fabrics with performance-driven construction. Our designs draw from the textures, colors, and energy of the ocean — subtle wave patterns, sea-glass hues, and the clean lines of the horizon.</p>
+        <p>We're not just selling clothes. We're inviting you into a community of people who live life a little more freely, a little more adventurously, and always with the ocean in mind.</p>
+      </div>
+      <div>
+        <div class="about-stats">
+          <div class="stat-box">
+            <div class="stat-number">2019</div>
+            <div class="stat-label">Founded</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">50K+</div>
+            <div class="stat-label">Customers</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">200+</div>
+            <div class="stat-label">Products</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">MY</div>
+            <div class="stat-label">Homegrown</div>
+          </div>
+        </div>
+        <div style="margin-top:32px;padding:32px;background:var(--sand)">
+          <div class="section-label">Our Mission</div>
+          <p style="font-family:var(--font-display);font-size:20px;font-weight:300;line-height:1.6;margin-top:12px">To design clothing that connects people to the coast — wherever they are in the world.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="values-section">
+    <div style="text-align:center">
+      <div class="section-label" style="color:var(--ocean-light)">What We Stand For</div>
+      <h2 class="section-title" style="color:white">Our Values</h2>
+    </div>
+    <div class="values-grid">
+      <div class="value-item">
+        <div class="value-icon">🌊</div>
+        <div class="value-title">Ocean First</div>
+        <p class="value-desc">Every design decision is filtered through the lens of coastal culture. We honour the ocean by using sustainable materials and eco-conscious practices whenever possible.</p>
+      </div>
+      <div class="value-item">
+        <div class="value-icon">⚡</div>
+        <div class="value-title">Performance Driven</div>
+        <p class="value-desc">Style shouldn't compromise function. Our activewear and everyday pieces are built to perform — in the water, on the trail, or at the café afterwards.</p>
+      </div>
+      <div class="value-item">
+        <div class="value-icon">🤝</div>
+        <div class="value-title">Community Built</div>
+        <p class="value-desc">CoastLab is more than a brand — it's a movement. We build with and for our community of coastal enthusiasts, adventurers, and style-conscious individuals.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:100px 80px;background:var(--white)">
+    <div class="section-label">Join the Movement</div>
+    <h2 class="section-title" style="margin-bottom:24px">Ready to Embrace<br>the Coastal Life?</h2>
+    <p style="font-size:15px;color:var(--mid);margin-bottom:36px;font-weight:300">Explore our latest collection and find your perfect coastal-inspired look.</p>
+    <button class="btn btn-primary" onclick="goPage('shop')">Shop Now</button>
+  </div>
+
+  <footer>
+    <div class="footer-bottom" style="border-top:1px solid rgba(255,255,255,0.1);padding-top:28px">
+      <span>© 2025 CoastLab. All rights reserved.</span>
+      <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b7c4c2c7c7d8c5c3f7d4d8d6c4c3dbd6d599d4d8da">[email&#160;protected]</a> · +60 12-345 6789</span>
+    </div>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE: CONTACT
+══════════════════════════════════════════ -->
+<div class="page" id="page-contact">
+  <div class="contact-layout">
+    <div class="contact-left">
+      <div class="contact-left-content">
+        <div class="section-label" style="color:var(--ocean-light)">Get in Touch</div>
+        <h1 class="contact-title">We'd Love<br>to Hear<br>From You.</h1>
+        <div class="contact-info-item">
+          <div class="contact-info-icon">✉️</div>
+          <div>
+            <div class="contact-info-label">Email</div>
+            <div class="contact-info-value"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="07747277776875734764686674736b66652964686a">[email&#160;protected]</a></div>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-info-icon">📞</div>
+          <div>
+            <div class="contact-info-label">Phone</div>
+            <div class="contact-info-value">+60 12-345 6789</div>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-info-icon">📍</div>
+          <div>
+            <div class="contact-info-label">Location</div>
+            <div class="contact-info-value">Malaysia 🇲🇾</div>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-info-icon">🕐</div>
+          <div>
+            <div class="contact-info-label">Business Hours</div>
+            <div class="contact-info-value">Mon – Fri: 9am – 6pm MYT</div>
+          </div>
+        </div>
+        <div style="margin-top:40px">
+          <div class="contact-info-label" style="color:rgba(255,255,255,0.4);margin-bottom:16px">Follow Us</div>
+          <div style="display:flex;gap:12px">
+            <a class="social-icon" href="#">📷</a>
+            <a class="social-icon" href="#">f</a>
+            <a class="social-icon" href="#">♪</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="contact-right">
+      <h2 class="contact-form-title">Send a Message</h2>
+      <div id="contact-success" style="display:none;padding:24px;background:rgba(91,154,184,0.1);border:1px solid var(--ocean);margin-bottom:24px">
+        <p style="font-size:15px;color:var(--ocean-deep)">✓ Message sent! We'll get back to you within 24 hours.</p>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="contact-fname" placeholder="John">
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" id="contact-lname" placeholder="Doe">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="contact-email" placeholder="john@example.com">
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="contact-phone" placeholder="+60 12-345 6789">
+      </div>
+      <div class="form-group">
+        <label>Subject</label>
+        <select id="contact-subject">
+          <option value="">Select a subject...</option>
+          <option>Order Enquiry</option>
+          <option>Product Question</option>
+          <option>Returns & Exchanges</option>
+          <option>Shipping Information</option>
+          <option>Partnership / Collaboration</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Your Message</label>
+        <textarea id="contact-message" rows="5" placeholder="Tell us how we can help..."></textarea>
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="submitContact()">Send Message →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE: CART
+══════════════════════════════════════════ -->
+<div class="page" id="page-cart">
+  <div class="cart-page">
+    <h1 class="cart-title">Shopping Cart <span id="cart-title-count" style="font-size:24px;color:var(--mid);font-weight:300"></span></h1>
+    <div id="cart-empty" class="empty-cart" style="display:none">
+      <div class="empty-cart-icon">🛍️</div>
+      <h2>Your cart is empty</h2>
+      <p>Looks like you haven't added anything yet. Explore our coastal collection!</p>
+      <button class="btn btn-primary" onclick="goPage('shop')">Start Shopping</button>
+    </div>
+    <div id="cart-filled" class="cart-layout">
+      <div>
+        <div id="cart-items-list"></div>
+      </div>
+      <div class="cart-summary">
+        <h3>Order Summary</h3>
+        <div class="summary-line"><span>Subtotal</span><span id="cart-subtotal">RM 0.00</span></div>
+        <div class="summary-line"><span>Shipping</span><span id="cart-shipping">RM 10.00</span></div>
+        <div class="summary-line"><span>Tax (6%)</span><span id="cart-tax">RM 0.00</span></div>
+        <div class="cart-promo">
+          <input type="text" placeholder="Promo code (WAVE15)" id="promo-input">
+          <button class="btn btn-outline" style="padding:12px 16px;font-size:11px" onclick="applyPromo()">Apply</button>
+        </div>
+        <div id="promo-msg" style="font-size:12px;color:var(--ocean);margin-bottom:12px;display:none">✓ WAVE15 applied — 15% off!</div>
+        <div class="summary-line total"><span>Total</span><span id="cart-total">RM 0.00</span></div>
+        <button class="btn btn-primary" style="width:100%;margin-top:16px;text-align:center" onclick="goPage('checkout')">Proceed to Checkout →</button>
+        <button class="btn btn-outline" style="width:100%;margin-top:10px;text-align:center" onclick="goPage('shop')">Continue Shopping</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE: CHECKOUT
+══════════════════════════════════════════ -->
+<div class="page" id="page-checkout">
+  <div class="checkout-page">
+    <h1 class="checkout-title">Checkout</h1>
+    <div class="checkout-steps">
+      <div class="checkout-step done">01 Information</div>
+      <div class="checkout-step active">02 Shipping</div>
+      <div class="checkout-step">03 Payment</div>
+    </div>
+    <div class="checkout-layout">
+      <div>
+        <div class="checkout-section">
+          <div class="checkout-section-title">Contact Information</div>
+          <div class="form-row">
+            <div class="form-group"><label>First Name</label><input type="text" placeholder="John"></div>
+            <div class="form-group"><label>Last Name</label><input type="text" placeholder="Doe"></div>
+          </div>
+          <div class="form-group"><label>Email Address</label><input type="email" placeholder="john@example.com"></div>
+          <div class="form-group"><label>Phone</label><input type="tel" placeholder="+60 12-345 6789"></div>
+        </div>
+
+        <div class="checkout-section">
+          <div class="checkout-section-title">Shipping Address</div>
+          <div class="form-group"><label>Address Line 1</label><input type="text" placeholder="Street address"></div>
+          <div class="form-group"><label>Address Line 2</label><input type="text" placeholder="Apartment, unit, etc. (optional)"></div>
+          <div class="form-row">
+            <div class="form-group"><label>City</label><input type="text" placeholder="Kuala Lumpur"></div>
+            <div class="form-group"><label>Postcode</label><input type="text" placeholder="50000"></div>
+          </div>
+          <div class="form-group">
+            <label>State</label>
+            <select>
+              <option>Selangor</option>
+              <option>Kuala Lumpur</option>
+              <option>Penang</option>
+              <option>Johor</option>
+              <option>Sabah</option>
+              <option>Sarawak</option>
+              <option>Perak</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="checkout-section">
+          <div class="checkout-section-title">Shipping Method</div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <label style="display:flex;gap:16px;padding:16px 20px;border:2px solid var(--ocean);cursor:pointer;align-items:center">
+              <input type="radio" name="shipping" checked> <div><div style="font-size:14px;font-weight:500">Standard Delivery</div><div style="font-size:12px;color:var(--mid)">3–5 business days</div></div><span style="margin-left:auto;font-weight:600">RM 10.00</span>
+            </label>
+            <label style="display:flex;gap:16px;padding:16px 20px;border:1px solid var(--border);cursor:pointer;align-items:center">
+              <input type="radio" name="shipping"> <div><div style="font-size:14px;font-weight:500">Express Delivery</div><div style="font-size:12px;color:var(--mid)">1–2 business days</div></div><span style="margin-left:auto;font-weight:600">RM 25.00</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="checkout-section">
+          <div class="checkout-section-title">Payment Information</div>
+          <div class="form-group"><label>Card Number</label><input type="text" placeholder="•••• •••• •••• ••••" maxlength="19"></div>
+          <div class="form-row">
+            <div class="form-group"><label>Expiry Date</label><input type="text" placeholder="MM / YY" maxlength="7"></div>
+            <div class="form-group"><label>CVV</label><input type="text" placeholder="•••" maxlength="4"></div>
+          </div>
+          <div class="form-group"><label>Name on Card</label><input type="text" placeholder="John Doe"></div>
+        </div>
+
+        <button class="btn btn-primary" style="width:100%;text-align:center;padding:18px;font-size:13px" onclick="placeOrder()">Place Order →</button>
+        <button class="btn btn-outline" style="width:100%;text-align:center;margin-top:10px" onclick="goPage('cart')">← Back to Cart</button>
+      </div>
+
+      <div class="checkout-order-summary">
+        <h3 style="font-family:var(--font-display);font-size:22px;font-weight:400;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid rgba(0,0,0,0.1)">Order Summary</h3>
+        <div id="checkout-items"></div>
+        <div style="margin-top:20px">
+          <div class="summary-line"><span>Subtotal</span><span id="checkout-subtotal">—</span></div>
+          <div class="summary-line"><span>Shipping</span><span>RM 10.00</span></div>
+          <div class="summary-line"><span>Tax (6%)</span><span id="checkout-tax">—</span></div>
+          <div class="summary-line total"><span>Total</span><span id="checkout-total">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE: ORDER SUCCESS
+══════════════════════════════════════════ -->
+<div class="page" id="page-success">
+  <div class="success-page">
+    <div class="success-icon">🌊</div>
+    <h1 class="success-title">Order Confirmed!</h1>
+    <p class="success-sub">Thank you for shopping with CoastLab. Your order is being processed and will be shipped within 1–2 business days.</p>
+    <p style="font-size:14px;color:var(--mid);margin-bottom:40px">A confirmation email has been sent to your inbox.</p>
+    <button class="btn btn-primary" onclick="goPage('shop')">Continue Shopping</button>
+    <button class="btn btn-outline" style="margin-left:12px;margin-top:12px" onclick="goPage('home')">Back to Home</button>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><!-- ══════════════════════════════════════════
+     PRODUCT DETAIL MODAL
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="product-modal" onclick="handleModalOverlayClick(event)">
+  <div class="modal" id="modal-inner">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+
+    <!-- LEFT: Image -->
+    <div class="modal-img-side">
+      <img class="modal-main-img" id="modal-main-img" src="" alt="">
+      <div id="modal-badge" class="modal-badge" style="display:none"></div>
+      <div class="modal-thumbs" id="modal-thumbs"></div>
+    </div>
+
+    <!-- RIGHT: Info -->
+    <div class="modal-info-side">
+      <div class="modal-cat" id="modal-cat"></div>
+      <h2 class="modal-name" id="modal-name"></h2>
+      <div class="modal-price" id="modal-price"></div>
+      <p class="modal-desc" id="modal-desc"></p>
+
+      <!-- Color -->
+      <div id="color-section">
+        <div class="modal-option-label">Colour <span id="selected-color-name"></span></div>
+        <div class="color-grid" id="modal-colors"></div>
+      </div>
+
+      <!-- Size -->
+      <div id="size-section">
+        <div class="modal-option-label">Size <span onclick="alert('XS: 0–2 | S: 4–6 | M: 8–10 | L: 12–14 | XL: 16–18')">Size Guide →</span></div>
+        <div class="size-grid" id="modal-sizes"></div>
+        <div class="modal-size-error" id="size-error">⚠ Please select a size before adding to cart.</div>
+      </div>
+
+      <!-- Quantity -->
+      <div class="modal-qty-row">
+        <div class="modal-qty-label">Qty</div>
+        <div class="modal-qty-ctrl">
+          <button class="modal-qty-btn" onclick="modalQty(-1)">−</button>
+          <div class="modal-qty-val" id="modal-qty">1</div>
+          <button class="modal-qty-btn" onclick="modalQty(1)">+</button>
+        </div>
+        <div style="font-size:12px;color:var(--mid);margin-left:12px" id="modal-stock"></div>
+      </div>
+
+      <!-- CTA -->
+      <button class="modal-add-btn" id="modal-add-btn" onclick="modalAddToCart()">Add to Cart</button>
+      <button class="modal-wishlist-btn" onclick="showNotification('Added to wishlist ♡'); this.textContent='♡ Saved to Wishlist'">♡ Save to Wishlist</button>
+
+      <!-- Features -->
+      <div class="modal-features">
+        <div class="modal-feature"><span>🚢</span><span>Free shipping on orders over RM250</span></div>
+        <div class="modal-feature"><span>↩️</span><span>Free returns within 30 days</span></div>
+        <div class="modal-feature"><span>🌿</span><span>Made with sustainable materials</span></div>
+        <div class="modal-feature"><span>🇲🇾</span><span>Ships from Malaysia</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── SIZE SETS ──
+const SIZES = {
+  apparel: [
+    { label:'XS', stock:true }, { label:'S', stock:true }, { label:'M', stock:true },
+    { label:'L', stock:true }, { label:'XL', stock:false }
+  ],
+  shoes: [
+    { label:'36', stock:true }, { label:'37', stock:true }, { label:'38', stock:true },
+    { label:'39', stock:true }, { label:'40', stock:false }, { label:'41', stock:true },
+    { label:'42', stock:true }, { label:'43', stock:false }
+  ],
+  kids: [
+    { label:'2Y', stock:true }, { label:'4Y', stock:true }, { label:'6Y', stock:true },
+    { label:'8Y', stock:true }, { label:'10Y', stock:false }
+  ],
+  onesize: [
+    { label:'One Size', stock:true }
+  ]
+};
+
+// ── COLORS ──
+const COLORS = {
+  ocean:  [{ name:'Ocean Blue', hex:'#5b9ab8' }, { name:'Deep Navy', hex:'#1a4a63' }, { name:'Sand', hex:'#c8b89a' }, { name:'White', hex:'#f5f5f3', border:true }],
+  neutral:[{ name:'Black', hex:'#1a1a1a' }, { name:'White', hex:'#f5f5f3', border:true }, { name:'Sand', hex:'#c8b89a' }],
+  active: [{ name:'Ocean Blue', hex:'#5b9ab8' }, { name:'Coral', hex:'#e07b6a' }, { name:'Black', hex:'#1a1a1a' }, { name:'White', hex:'#f5f5f3', border:true }],
+  kids:   [{ name:'Sky Blue', hex:'#87c3e0' }, { name:'Coral', hex:'#e07b6a' }, { name:'Mint', hex:'#7ecfc0' }],
+  acc:    [{ name:'Natural', hex:'#c8b89a' }, { name:'Black', hex:'#1a1a1a' }, { name:'Ocean', hex:'#5b9ab8' }],
+};
+
+// ── PRODUCT DATA ──
+const PRODUCTS = [
+  // Women's Fashion
+  { id: 1, name: "Coral Drift Sundress", category: "Women's Fashion", price: 189,
+    img: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=700&q=85", badge: "new",
+    desc: "A breezy, lightweight sundress inspired by the hues of a coral reef at dusk. Crafted from 100% breathable linen blend with an easy A-line silhouette — perfect for beach days and evening strolls.",
+    sizes: SIZES.apparel, colors: COLORS.ocean, sizeType: 'apparel' },
+  { id: 2, name: "Wave Break Linen Shirt", category: "Women's Fashion", price: 149, originalPrice: 189,
+    img: "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=700&q=85", badge: "sale",
+    desc: "An oversized linen button-up in coastal-inspired tones. Effortlessly transitions from a beach cover-up to a casual everyday top. Features a relaxed fit with dropped shoulders.",
+    sizes: SIZES.apparel, colors: COLORS.neutral, sizeType: 'apparel' },
+  { id: 3, name: "Shore Line Midi Skirt", category: "Women's Fashion", price: 165,
+    img: "https://is4.revolveassets.com/images/p4/n/z/LIOR-WQ66_V1.jpg",
+    desc: "A fluid midi skirt with a subtle wave-print lining. Cut from lightweight crepe fabric that moves beautifully in sea breeze. Features an elastic waistband for all-day comfort.",
+    sizes: SIZES.apparel, colors: COLORS.ocean, sizeType: 'apparel' },
+  { id: 4, name: "Tide Pool Crop Top", category: "Women's Fashion", price: 89,
+    img: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=700&q=85", badge: "new",
+    desc: "A relaxed-fit ribbed crop top with a raw hem edge. Made from a sustainable cotton-modal blend that's incredibly soft against the skin. Pairs perfectly with our Shore Line Midi Skirt.",
+    sizes: SIZES.apparel, colors: COLORS.active, sizeType: 'apparel' },
+  // Men's Fashion
+  { id: 5, name: "Horizon Linen Shirt", category: "Men's Fashion", price: 175,
+    img: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=700&q=85", badge: "new",
+    desc: "A relaxed long-sleeve linen shirt in classic coastal tones. The slightly textured fabric is woven in Portugal and gets better with every wash. Ideal for warm evenings by the waterfront.",
+    sizes: SIZES.apparel, colors: COLORS.neutral, sizeType: 'apparel' },
+  { id: 6, name: "Saltwater Chino Shorts", category: "Men's Fashion", price: 129,
+    img: "https://xcdn.next.co.uk/common/items/default/default/itemimages/3_4Ratio/product/lge/AG7139s.jpg?im=Resize,width=750",
+    desc: "Versatile mid-length chino shorts with quick-dry technology. Built for the beach but polished enough for lunch in town. Features zip pockets and an adjustable waistband.",
+    sizes: SIZES.apparel, colors: COLORS.neutral, sizeType: 'apparel' },
+  { id: 7, name: "Deep Blue Polo Tee", category: "Men's Fashion", price: 115, originalPrice: 145,
+    img: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=700&q=85", badge: "sale",
+    desc: "A premium piqué polo in our signature ocean blue. Made from organic cotton with moisture-wicking properties. A wardrobe essential that goes from the boat to the bar.",
+    sizes: SIZES.apparel, colors: COLORS.ocean, sizeType: 'apparel' },
+  { id: 8, name: "Nautical Overshirt", category: "Men's Fashion", price: 219,
+    img: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=700&q=85",
+    desc: "A heavy-duty overshirt inspired by the classic sailor's workshirt. Soft brushed cotton interior with a rugged exterior. Wear it open as a jacket or buttoned up for cooler evenings.",
+    sizes: SIZES.apparel, colors: COLORS.neutral, sizeType: 'apparel' },
+  // Activewear
+  { id: 9, name: "Swell Sports Bra", category: "Activewear Revolution", price: 98,
+    img: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=700&q=85", badge: "new",
+    desc: "Medium-support sports bra with a cross-back design and UPF 50+ protection. Made from recycled ocean plastic and designed for yoga, paddle boarding, and everything in between.",
+    sizes: SIZES.apparel, colors: COLORS.active, sizeType: 'apparel' },
+  { id: 10, name: "Rip Tide Running Shorts", category: "Activewear Revolution", price: 85,
+    img: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=700&q=85",
+    desc: "Lightweight 4-way stretch running shorts with a built-in liner. Deep side pockets, reflective detailing, and quick-dry fabric for runs at dawn or dusk along the shore.",
+    sizes: SIZES.apparel, colors: COLORS.active, sizeType: 'apparel' },
+  { id: 11, name: "Current Compression Tights", category: "Activewear Revolution", price: 135,
+    img: "https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=700&q=85",
+    desc: "Full-length compression tights with targeted support panels and a high-rise waistband. Crafted from our CoastTech™ fabric — breathable, squat-proof, and made from 78% recycled fibres.",
+    sizes: SIZES.apparel, colors: COLORS.active, sizeType: 'apparel' },
+  { id: 12, name: "Coastal Wind Jacket", category: "Activewear Revolution", price: 265,
+    img: "https://images.unsplash.com/photo-1551232864-3f0890e580d9?w=700&q=85", badge: "new",
+    desc: "A packable wind-resistant jacket built for coastal adventures. Water-repellent finish, adjustable hood, and zippered pockets. Packs into its own pocket for effortless carrying.",
+    sizes: SIZES.apparel, colors: COLORS.ocean, sizeType: 'apparel' },
+  // Accessories
+  { id: 13, name: "Ocean Straw Sun Hat", category: "Accessories", price: 78,
+    img: "https://images.unsplash.com/photo-1521369909029-2afed882baee?w=700&q=85",
+    desc: "A wide-brim straw sun hat with a black grosgrain ribbon band. Handwoven from natural toyo straw, UPF 50+ rated. Packable and shaped to hold after travel.",
+    sizes: SIZES.onesize, colors: COLORS.acc, sizeType: 'onesize' },
+  { id: 14, name: "Wave Weave Tote Bag", category: "Accessories", price: 95,
+    img: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=700&q=85", badge: "new",
+    desc: "An oversized woven tote bag with a wave-textured exterior and canvas inner lining. Spacious enough for a full beach day — towels, sunscreen, and all. Features an internal zip pocket.",
+    sizes: SIZES.onesize, colors: COLORS.acc, sizeType: 'onesize' },
+  { id: 15, name: "Drifter Sunglasses", category: "Accessories", price: 185,
+    img: "https://is4.revolveassets.com/images/p4/n/z/RAYB-WG40_V1.jpg",
+    desc: "Polarised UV400 sunglasses with a retro oversized frame. Lightweight stainless steel temples and TR90 frame. Comes in a soft microfibre pouch and branded case.",
+    sizes: SIZES.onesize, colors: COLORS.ocean, sizeType: 'onesize' },
+  { id: 16, name: "Sea Glass Bracelet Set", category: "Accessories", price: 65, originalPrice: 85,
+    img: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=700&q=85", badge: "sale",
+    desc: "A set of three handcrafted bracelets featuring sea glass beads, freshwater pearls, and woven cord. Each piece is unique and inspired by treasures found along Malaysian shorelines.",
+    sizes: SIZES.onesize, colors: COLORS.acc, sizeType: 'onesize' },
+  // Women's Footwear
+  { id: 17, name: "Shoreline Platform Sandals", category: "Women's Footwear", price: 215,
+    img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=700&q=85", badge: "new",
+    desc: "A raffia-wrapped platform sandal with adjustable ankle straps. 5cm platform adds height without discomfort. Nappa leather footbed and jute outsole — a coastal summer essential.",
+    sizes: SIZES.shoes, colors: COLORS.acc, sizeType: 'shoes' },
+  { id: 18, name: "Pebble Slide Flats", category: "Women's Footwear", price: 155,
+    img: "https://images.unsplash.com/photo-1515347619252-60a4bf4fff4f?w=700&q=85",
+    desc: "Minimalist leather slide flats with a cushioned insole and a subtle pebble-texture upper. Goes seamlessly from beach boardwalk to boutique. Available in three coastal hues.",
+    sizes: SIZES.shoes, colors: COLORS.neutral, sizeType: 'shoes' },
+  // Men's Footwear
+  { id: 19, name: "Dune Runner Sneakers", category: "Men's Footwear", price: 289,
+    img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=700&q=85", badge: "new",
+    desc: "A lightweight performance sneaker with sand-resistant mesh upper and grip rubber outsole. EVA midsole provides all-day cushioning. Inspired by the texture and tones of coastal dunes.",
+    sizes: SIZES.shoes, colors: COLORS.ocean, sizeType: 'shoes' },
+  { id: 20, name: "Tidal Leather Loafers", category: "Men's Footwear", price: 345,
+    img: "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=700&q=85",
+    desc: "Full-grain leather penny loafers with a leather-lined interior and rubber heel. A timeless silhouette updated with modern proportions and a coastal-inspired waxed finish.",
+    sizes: SIZES.shoes, colors: COLORS.neutral, sizeType: 'shoes' },
+  // Kid's Clothing
+  { id: 21, name: "Mini Surf Rashguard", category: "Kid's Clothing", price: 65,
+    img: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=700&q=85", badge: "new",
+    desc: "A UPF 50+ rashguard for little ones who love the water. Long sleeves with flat-lock seams to prevent chafing, made from recycled nylon. Features a wave print on the back.",
+    sizes: SIZES.kids, colors: COLORS.kids, sizeType: 'kids' },
+  { id: 22, name: "Little Wave Swim Set", category: "Kid's Clothing", price: 89,
+    img: "https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?w=700&q=85",
+    desc: "A matching swim top and shorts set for junior beach adventurers. Quick-dry fabric with an adjustable waistband and inner mesh liner. Vibrant coastal print that stays bright wash after wash.",
+    sizes: SIZES.kids, colors: COLORS.kids, sizeType: 'kids' },
+  { id: 23, name: "Beach Buddy Overalls", category: "Kid's Clothing", price: 95,
+    img: "https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?w=700&q=85",
+    desc: "Adorable linen-blend overalls for little coastal explorers. Easy snap fasteners, adjustable straps, and a bib pocket. Pre-washed for extra softness and long-lasting comfort.",
+    sizes: SIZES.kids, colors: COLORS.kids, sizeType: 'kids' },
+  { id: 24, name: "Coastal Kids Tee Pack", category: "Kid's Clothing", price: 75, originalPrice: 95,
+    img: "https://images.unsplash.com/photo-1471286174890-9c112ffca5b4?w=700&q=85", badge: "sale",
+    desc: "A pack of 3 organic cotton tees with hand-drawn ocean illustrations — a whale, a wave, and a starfish. Soft jersey fabric, tagless label, and reinforced shoulder seams.",
+    sizes: SIZES.kids, colors: COLORS.kids, sizeType: 'kids' },
+];
+
+// ── CART STATE ──
+let cart = [];
+let promoApplied = false;
+
+// ── NAVIGATION ──
+function goPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  window.scrollTo(0, 0);
+  if (name === 'cart') renderCart();
+  if (name === 'checkout') renderCheckout();
+  if (name === 'shop') renderShop(PRODUCTS);
+}
+
+function filterShop(category) {
+  goPage('shop');
+  // Check the matching category checkbox
+  document.querySelectorAll('.cat-filter').forEach(cb => {
+    cb.checked = cb.value === category;
+  });
+  const filtered = PRODUCTS.filter(p => p.category === category);
+  renderShop(filtered);
+  document.getElementById('shop-count').textContent = `Showing ${filtered.length} products in "${category}"`;
+}
+
+// ── MOBILE MENU ──
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobile-menu');
+  menu.classList.toggle('open');
+}
+
+// ── RENDER PRODUCT CARD ──
+function productCardHTML(p) {
+  const priceHTML = p.originalPrice
+    ? `<div class="product-price"><span class="original">RM ${p.originalPrice}</span><span class="sale-price">RM ${p.price}</span></div>`
+    : `<div class="product-price">RM ${p.price}</div>`;
+
+  const badgeHTML = p.badge
+    ? `<div class="product-badge ${p.badge}">${p.badge === 'new' ? 'New' : 'Sale'}</div>`
+    : '';
+
+  return `<div class="product-card" onclick="openModal(${p.id})" style="cursor:pointer">
+    <div class="product-img-wrap">
+      <img src="${p.img}" alt="${p.name}" loading="lazy">
+      ${badgeHTML}
+      <div class="product-actions-overlay">
+        <button class="product-quick-add" onclick="event.stopPropagation();openModal(${p.id})">View Product</button>
+      </div>
+    </div>
+    <div class="product-category-tag">${p.category}</div>
+    <div class="product-name">${p.name}</div>
+    ${priceHTML}
+  </div>`;
+}
+
+// ── MODAL STATE ──
+let modalProductId = null;
+let modalSelectedSize = null;
+let modalSelectedColor = null;
+let modalQtyVal = 1;
+
+function openModal(id) {
+  const p = PRODUCTS.find(x => x.id === id);
+  if (!p) return;
+  modalProductId = id;
+  modalSelectedSize = null;
+  modalSelectedColor = p.colors[0].name;
+  modalQtyVal = 1;
+
+  // Main image
+  document.getElementById('modal-main-img').src = p.img;
+  document.getElementById('modal-main-img').alt = p.name;
+
+  // Badge
+  const badgeEl = document.getElementById('modal-badge');
+  if (p.badge) {
+    badgeEl.style.display = 'block';
+    badgeEl.textContent = p.badge === 'new' ? 'New Arrival' : 'On Sale';
+    badgeEl.style.background = p.badge === 'new' ? '#1a4a63' : '#5b9ab8';
+  } else {
+    badgeEl.style.display = 'none';
+  }
+
+  // Info
+  document.getElementById('modal-cat').textContent = p.category;
+  document.getElementById('modal-name').textContent = p.name;
+  document.getElementById('modal-desc').textContent = p.desc;
+
+  // Price
+  const priceEl = document.getElementById('modal-price');
+  if (p.originalPrice) {
+    priceEl.innerHTML = `<span class="orig">RM ${p.originalPrice}</span><span class="sale">RM ${p.price}</span>`;
+  } else {
+    priceEl.innerHTML = `RM ${p.price}`;
+  }
+
+  // Thumbnails (reuse same img at different crops for demo)
+  const thumbUrls = [p.img, p.img.replace('w=700','w=700&crop=top'), p.img.replace('w=700','w=700&sat=-50')];
+  document.getElementById('modal-thumbs').innerHTML = thumbUrls.map((url, i) =>
+    `<img class="modal-thumb ${i===0?'active':''}" src="${url}" onclick="switchModalImg(this,'${url}')">`
+  ).join('');
+
+  // Colors
+  document.getElementById('selected-color-name').textContent = p.colors[0].name;
+  document.getElementById('modal-colors').innerHTML = p.colors.map((c, i) =>
+    `<button class="color-btn ${i===0?'selected':''}" title="${c.name}"
+      style="background:${c.hex};${c.border?'border:2px solid #ccc;':''}"
+      onclick="selectColor(this,'${c.name}')"></button>`
+  ).join('');
+
+  // Sizes
+  const sizeSection = document.getElementById('size-section');
+  if (p.sizeType === 'onesize') {
+    sizeSection.style.display = 'none';
+    modalSelectedSize = 'One Size';
+  } else {
+    sizeSection.style.display = 'block';
+    document.getElementById('modal-sizes').innerHTML = p.sizes.map(s =>
+      `<button class="size-btn${s.stock?'':' out-of-stock'}"
+        ${s.stock?`onclick="selectSize(this,'${s.label}')"`:'disabled title="Out of stock"'}
+      >${s.label}</button>`
+    ).join('');
+  }
+
+  // Qty
+  document.getElementById('modal-qty').textContent = 1;
+  document.getElementById('modal-stock').textContent = '✓ In Stock';
+  document.getElementById('size-error').style.display = 'none';
+
+  // Open
+  document.getElementById('product-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('product-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleModalOverlayClick(e) {
+  if (e.target === document.getElementById('product-modal')) closeModal();
+}
+
+function switchModalImg(thumb, url) {
+  document.getElementById('modal-main-img').src = url;
+  document.querySelectorAll('.modal-thumb').forEach(t => t.classList.remove('active'));
+  thumb.classList.add('active');
+}
+
+function selectSize(btn, label) {
+  document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  modalSelectedSize = label;
+  document.getElementById('size-error').style.display = 'none';
+}
+
+function selectColor(btn, name) {
+  document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  modalSelectedColor = name;
+  document.getElementById('selected-color-name').textContent = name;
+}
+
+function modalQty(delta) {
+  modalQtyVal = Math.max(1, Math.min(10, modalQtyVal + delta));
+  document.getElementById('modal-qty').textContent = modalQtyVal;
+}
+
+function modalAddToCart() {
+  const p = PRODUCTS.find(x => x.id === modalProductId);
+  if (!p) return;
+
+  // Require size selection (except onesize)
+  if (p.sizeType !== 'onesize' && !modalSelectedSize) {
+    document.getElementById('size-error').style.display = 'block';
+    document.getElementById('modal-sizes').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
+  }
+
+  const key = `${p.id}-${modalSelectedSize}-${modalSelectedColor}`;
+  const existing = cart.find(i => i.cartKey === key);
+  if (existing) {
+    existing.qty += modalQtyVal;
+  } else {
+    cart.push({
+      ...p,
+      cartKey: key,
+      qty: modalQtyVal,
+      selectedSize: modalSelectedSize || 'One Size',
+      selectedColor: modalSelectedColor
+    });
+  }
+
+  updateCartCount();
+  showNotification(`${p.name} (${modalSelectedSize || 'One Size'}, ${modalSelectedColor}) added!`);
+
+  // Visual feedback on button
+  const btn = document.getElementById('modal-add-btn');
+  btn.textContent = '✓ Added to Cart!';
+  btn.style.background = '#1a4a63';
+  setTimeout(() => {
+    btn.textContent = 'Add to Cart';
+    btn.style.background = '';
+    closeModal();
+  }, 1400);
+}
+
+// ── RENDER HOME PRODUCTS (8 featured) ──
+function renderHomeProducts() {
+  const featured = PRODUCTS.slice(0, 8);
+  document.getElementById('home-products').innerHTML = featured.map(productCardHTML).join('');
+}
+
+// ── RENDER SHOP ──
+let currentProducts = [...PRODUCTS];
+
+function renderShop(products) {
+  currentProducts = products;
+  document.getElementById('shop-products').innerHTML = products.map(productCardHTML).join('');
+  document.getElementById('shop-count').textContent = `Showing ${products.length} products`;
+}
+
+function applyFilters() {
+  const checked = Array.from(document.querySelectorAll('.cat-filter:checked')).map(cb => cb.value);
+  const filtered = checked.length ? PRODUCTS.filter(p => checked.includes(p.category)) : PRODUCTS;
+  renderShop(filtered);
+}
+
+function clearFilters() {
+  document.querySelectorAll('.cat-filter').forEach(cb => cb.checked = false);
+  renderShop(PRODUCTS);
+}
+
+function sortProducts(val) {
+  let sorted = [...currentProducts];
+  if (val === 'price-asc') sorted.sort((a, b) => a.price - b.price);
+  if (val === 'price-desc') sorted.sort((a, b) => b.price - a.price);
+  if (val === 'newest') sorted = sorted.filter(p => p.badge === 'new').concat(sorted.filter(p => p.badge !== 'new'));
+  document.getElementById('shop-products').innerHTML = sorted.map(productCardHTML).join('');
+}
+
+// ── CART ──
+function addToCart(id) {
+  // Legacy fallback — open modal instead
+  openModal(id);
+}
+
+function updateCartCount() {
+  const total = cart.reduce((sum, i) => sum + i.qty, 0);
+  document.getElementById('cart-count').textContent = total;
+}
+
+function removeFromCart(key) {
+  cart = cart.filter(i => i.cartKey !== key);
+  updateCartCount();
+  renderCart();
+}
+
+function changeQty(key, delta) {
+  const item = cart.find(i => i.cartKey === key);
+  if (item) {
+    item.qty += delta;
+    if (item.qty < 1) item.qty = 1;
+  }
+  renderCart();
+}
+
+function getSubtotal() {
+  return cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+}
+
+function renderCart() {
+  const sub = getSubtotal();
+  const shipping = cart.length ? 10 : 0;
+  const tax = sub * 0.06;
+  const discount = promoApplied ? sub * 0.15 : 0;
+  const total = sub + shipping + tax - discount;
+
+  document.getElementById('cart-title-count').textContent = cart.length ? `(${cart.reduce((s,i)=>s+i.qty,0)} items)` : '';
+
+  if (!cart.length) {
+    document.getElementById('cart-empty').style.display = 'block';
+    document.getElementById('cart-filled').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('cart-empty').style.display = 'none';
+  document.getElementById('cart-filled').style.display = 'grid';
+
+  document.getElementById('cart-items-list').innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <img class="cart-item-img" src="${item.img}" alt="${item.name}">
+      <div>
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-variant">${item.selectedSize ? `Size: ${item.selectedSize}` : ''} ${item.selectedColor ? `· ${item.selectedColor}` : ''}</div>
+        <div style="font-size:11px;color:var(--mid);margin-bottom:12px">${item.category}</div>
+        <div class="cart-qty">
+          <button class="qty-btn" onclick="changeQty('${item.cartKey}',-1)">−</button>
+          <span class="qty-val">${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty('${item.cartKey}',1)">+</button>
+        </div>
+        <button class="cart-remove" onclick="removeFromCart('${item.cartKey}')">Remove</button>
+      </div>
+      <div>
+        <div class="cart-item-price">RM ${(item.price * item.qty).toFixed(2)}</div>
+        <div style="font-size:11px;color:var(--mid);margin-top:4px;text-align:right">RM ${item.price} each</div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('cart-subtotal').textContent = `RM ${sub.toFixed(2)}`;
+  document.getElementById('cart-shipping').textContent = `RM ${shipping.toFixed(2)}`;
+  document.getElementById('cart-tax').textContent = `RM ${tax.toFixed(2)}`;
+  document.getElementById('cart-total').textContent = `RM ${total.toFixed(2)}`;
+}
+
+function applyPromo() {
+  const code = document.getElementById('promo-input').value.trim().toUpperCase();
+  if (code === 'WAVE15') {
+    promoApplied = true;
+    document.getElementById('promo-msg').style.display = 'block';
+    renderCart();
+    showNotification('Promo code WAVE15 applied!');
+  } else {
+    showNotification('Invalid promo code.');
+  }
+}
+
+// ── CHECKOUT ──
+function renderCheckout() {
+  const sub = getSubtotal();
+  const tax = sub * 0.06;
+  const total = sub + 10 + tax;
+
+  document.getElementById('checkout-items').innerHTML = cart.map(item => `
+    <div class="checkout-order-item">
+      <img class="checkout-order-img" src="${item.img}" alt="${item.name}">
+      <div>
+        <div class="checkout-order-name">${item.name}</div>
+        <div class="checkout-order-variant">${item.selectedSize ? `Size ${item.selectedSize}` : ''} ${item.selectedColor ? `· ${item.selectedColor}` : ''} · Qty ${item.qty}</div>
+      </div>
+      <div class="checkout-order-price">RM ${(item.price * item.qty).toFixed(2)}</div>
+    </div>`).join('');
+
+  document.getElementById('checkout-subtotal').textContent = `RM ${sub.toFixed(2)}`;
+  document.getElementById('checkout-tax').textContent = `RM ${tax.toFixed(2)}`;
+  document.getElementById('checkout-total').textContent = `RM ${(total).toFixed(2)}`;
+}
+
+function placeOrder() {
+  cart = [];
+  promoApplied = false;
+  updateCartCount();
+  goPage('success');
+}
+
+// ── CONTACT ──
+function submitContact() {
+  const fname = document.getElementById('contact-fname').value.trim();
+  const email = document.getElementById('contact-email').value.trim();
+  if (!fname || !email) {
+    showNotification('Please fill in your name and email.');
+    return;
+  }
+  document.getElementById('contact-success').style.display = 'block';
+  showNotification('Message sent! We\'ll reply soon.');
+}
+
+// ── NOTIFICATION ──
+function showNotification(text) {
+  const notif = document.getElementById('notification');
+  document.getElementById('notification-text').textContent = text;
+  notif.classList.add('show');
+  setTimeout(() => notif.classList.remove('show'), 3200);
+}
+
+// ── INIT ──
+renderHomeProducts();
+renderShop(PRODUCTS);
+
+// Close modal on Escape
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>
